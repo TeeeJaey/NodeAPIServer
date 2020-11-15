@@ -1,0 +1,88 @@
+<html>    
+    <head>
+        <title>My JS Client</title>
+		<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
+		<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+
+		<script src="http://code.jquery.com/jquery-2.1.4.min.js"></script>
+		<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+		<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
+		<script src="https://cdn.jsdelivr.net/npm/sweetalert2@10"></script>
+
+        
+		<script type="text/javascript" src="client.js"></script>
+    </head>
+
+    <style>
+        body 
+        {
+            margin:50px
+        }
+        .phoneBook
+        {
+            font-size:22px;
+            background-color : #ff5e6c;
+            color:white;
+            text-align: center;
+        } 
+    </style>
+
+    <body>
+        <h2>Client for my NodeApp server</h2>
+        
+        <div class="container phoneBook">
+            <div class="row">
+                <div class="col-xs-9" style="padding-top: 10px;"> <b> My phone book </b> </div>
+                <div class="col-xs-3" style="padding-top: 10px;">
+                    <button class="btn btn-success" value="Add New Contact" id="btnNewContact">Add New Contact</button>
+                </div>
+            </div>
+            <hr>
+            <div id="contactContainer">
+            </div>
+        </div>
+
+        <div class="row" id="contactList" style="display: none;" >
+            <div class="col-xs-2 seq" >1</div>
+            <div class="col-xs-3 name" >Tejas</div>
+            <div class="col-xs-4 phone" >9930860936</div>
+            <div class="col-xs-3 delete">
+                <button class="btn btn-primary btnUpdate" value="Update" >Update</button>
+                <button class="btn btn-danger btnDelete" value="Delete">Delete</button>
+            </div>
+        </div>
+
+
+        		<!-- Property Sale modal -->
+		<div class="modal fade " style="margin-top: 100px" id="contactCardModal" tabindex="-1" role="dialog"  aria-hidden="true">
+			<div class="modal-dialog " role="document">
+			<div class="modal-content">
+				<div class="modal-header">
+					<h3 class="modal-title">Contact Card</h3>
+				</div>
+
+				<div class="modal-body">
+                    <form>
+                        <div class="form-group">
+                            <label for="formname" class="control-label">Name: </label> (HINT : atleast 3 alphabets)
+                            <input type="text" name="formname" class="form-control formName" required  />
+                        </div>
+                        <div class="form-group">
+                            <label for="formPhone" class="control-label">Phone: </label> (HINT : atleast 8 numbers)
+                            <input class="form-control formPhone" name="formPhone" id="message-text" />
+                        </div>
+                    </form>
+				</div>
+
+				<div class="modal-footer">
+					<button type="button" class="btn btn-success formSubmit" id="submit"> Submit </button>
+					<button type="button" class="btn btn-danger" data-dismiss="modal" > Cancel </button>
+				</div>
+			</div>
+			</div>
+		</div>
+    </body>
+
+
+</html>
+
