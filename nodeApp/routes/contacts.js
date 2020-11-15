@@ -23,7 +23,7 @@ function validateContact(contact)
 
 function getContact(id) 
 {
- return contacts.find(x => x.id == id);
+    return contacts.find(x => x.id == id);
 }
 
 //#region "Get Request"
