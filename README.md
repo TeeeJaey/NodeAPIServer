@@ -6,6 +6,7 @@ To Run :
 
 - In "nodeApp" folder run below commands :
 	> npm install
+	
 	> nodemon index.js 
  
 - Open client/client.html in a browser
