@@ -5,28 +5,18 @@ var phoneBook = [];
 var updateID = "";
 var currentOperation = "add";
 
+var contactContainer = new Vue();       // to put data in HTML
+
 function refreshPhoneBook(contacts)
 {
     phoneBook = [];
-    var seq = 1;
-    $("#contactContainer").empty();
-
     for(var i = 0; i < contacts.length; i += 1)
     {
-        phoneBook.push(contacts[i]);
-
-        var contact = $("#contactList").clone().attr("id",contacts[i].id);
-        contact.children(".seq").text(seq);
-        contact.children(".name").text(contacts[i].name);
-        contact.children(".phone").text(contacts[i].phone);
-        contact.css('display','');
-        
-        contact.appendTo("#contactContainer");
-        $("<br>").appendTo("#contactContainer");
-
-        seq += 1;
+        contacts[i].seq = i+1;
+        phoneBook.push(contacts[i]); 
     }
 
+    contactContainer.phoneBook = phoneBook;
     console.log(phoneBook);
 }
 
@@ -71,6 +61,11 @@ function validateForm()
 
 $(document).ready(function()
 {
+
+    contactContainer = new Vue({
+        el: '#contactContainer',
+        data: {phoneBook : phoneBook}
+    });
 
     $(document.body).on('click',"#submit", function()
     {
