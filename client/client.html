@@ -40,7 +40,20 @@
             </div>
             <hr>
             <div id="contactContainer"> 
-                <div class="row" v-for="x in phoneBook" :id=" x.id "  >
+                <div class="row" v-if="!serverOnline">
+                    Error in server :( 
+                    <br>
+                    Check the console for details.
+                    <br><br>
+                </div>
+                
+                <div class="row" v-if="serverOnline && phoneBookEmpty">
+                    You have no contacts.. 
+                    <br>
+                    Try adding one :)
+                    <br><br>
+                </div>
+                <div class="row" v-if="serverOnline && !phoneBookEmpty"  v-for="x in phoneBook" v-bind:id=" x.id "  >
                     <div class="col-xs-2 seq" > {{ x.seq }} </div>
                     <div class="col-xs-3 name" > {{ x.name }} </div>
                     <div class="col-xs-4 phone" > {{ x.phone }} </div>

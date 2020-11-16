@@ -17,6 +17,11 @@ function refreshPhoneBook(contacts)
     }
 
     contactContainer.phoneBook = phoneBook;
+    if(phoneBook.length > 0)
+        contactContainer.phoneBookEmpty = false; 
+    else
+        contactContainer.phoneBookEmpty = true; 
+    
     console.log(phoneBook);
 }
 
@@ -29,10 +34,12 @@ function makeAPICall(method,URL,body)
     {
         if (this.readyState == 4 && this.status == 200) 
         {
+            contactContainer.serverOnline = true;
             refreshPhoneBook(JSON.parse(this.response));
         }
         else
         {
+            contactContainer.serverOnline = false;
             console.error(this.responseText);
         }
     };
@@ -64,7 +71,11 @@ $(document).ready(function()
 
     contactContainer = new Vue({
         el: '#contactContainer',
-        data: {phoneBook : phoneBook}
+        data: {
+            serverOnline : false,
+            phoneBookEmpty : true,
+            phoneBook : []
+        }
     });
 
     $(document.body).on('click',"#submit", function()
