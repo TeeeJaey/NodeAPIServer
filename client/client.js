@@ -65,6 +65,22 @@ function validateForm()
     return;
 }
 
+function toggleFavourite(isFavourite)
+{
+    currentOperation = "upd";
+
+    var updContact = phoneBook.find(x => x.id == updateID);
+    updContact.isFavourite = isFavourite;
+
+    const contact = {
+        name : updContact.name,
+        phone : updContact.phone,
+        isFavourite : updContact.isFavourite
+    };
+
+    makeAPICall("PUT", contactApiUrl + "updateContact/" + updateID , JSON.stringify(contact)); 
+    return;
+}
 
 $(document).ready(function()
 {
@@ -77,6 +93,7 @@ $(document).ready(function()
             phoneBook : []
         }
     });
+    makeAPICall("GET", contactApiUrl + "getAllContacts");
 
     $(document.body).on('click',"#submit", function()
     {
@@ -130,5 +147,17 @@ $(document).ready(function()
         makeAPICall("DELETE", contactApiUrl + "removeContact/" + id); 
     });
 
-    makeAPICall("GET", contactApiUrl + "getAllContacts");
+    $(document.body).on('click','.fa-star', function()
+    {
+        updateID = this.parentElement.parentElement.id;
+        toggleFavourite(false);
+    });
+
+    $(document.body).on('click','.fa-star-o', function()
+    {
+        updateID = this.parentElement.parentElement.id;
+        toggleFavourite(true);
+    });
+
+    
 });

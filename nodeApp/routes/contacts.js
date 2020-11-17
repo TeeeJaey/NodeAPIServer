@@ -4,46 +4,60 @@ const Joi = require('joi');             // Request validation
 const router = express.Router();
 const uuid = require('uuid');
 
+const ContactDB = require('../ContactDBCollection').ContactDB;
+
 router.use(express.json());
 
-var contacts = [
-    { id: uuid.v4() , name:'Tejas' , phone: '9930860936' },
-    { id: uuid.v4() , name:'Mosh' , phone: '9876543210' },
-    { id: uuid.v4() , name:'Jarvis' , phone: '9988776655' }
-];
 
 function validateContact(contact) 
 {
     const schema = Joi.object({
         name : Joi.string().min(3).required(),
-        phone : Joi.string().min(6).required()
+        phone : Joi.number().min(6).required(),
+        isFavourite : Joi.boolean()
     });
-    return schema.validate(contact); 
+    return schema.validate(contact);
 }
 
-function getContact(id) 
+
+async function getDBContact(id)               // Mongo DB SELECT
 {
-    return contacts.find(x => x.id == id);
+    const dbContacts = await ContactDB
+        .find( {id: id} );   
+        
+    return(dbContacts[0]);
+    //return contacts.find(x => x.id == id);
 }
 
-//#region "Get Request"
+
+//#region "Get Request" Read
+
+async function getDBAllContacts(id)               // Mongo DB SELECT
+{
+    const dbContacts = await ContactDB
+        .find();   
+        
+    return(dbContacts);
+}
 
 router.get('/getAllContacts', function(req,res)
 {
-    res.send(contacts);
+    getDBAllContacts()
+        .then(contacts => res.send(contacts))
+        .catch(err => res.send("Error: " + err));
 });
 
-router.get('/getAContact/:id', function(req,res)
-{
-    var contact = getContact(req.params.id);
-    if(!contact)
-        res.status(404).send("Error 404 : The contact with given ID was not found !");
-    else
-        res.send( contact );
-});
+
 //#endregion
 
-//#region "Post Request"
+//#region "Post Request" Create
+
+async function insertDBContact(contact)
+{
+    const contactDBObj = new ContactDB(contact);
+    const mongoResult = await contactDBObj.save();
+    return;
+}
 
 router.post('/newContact', function(req,res)
 { 
@@ -55,22 +69,42 @@ router.post('/newContact', function(req,res)
         var contact = {
             id: uuid.v4(),
             name: req.body.name,
-            phone: req.body.phone,
+            phone: parseInt(req.body.phone),
+            isFavourite: req.body.isFavourite
         };
-    
-        contacts.push(contact);
-        res.send(contacts);
+        insertDBContact(contact)
+            .then(() =>
+            {
+                getDBAllContacts()
+                .then(contacts => res.send(contacts))
+                .catch(err => res.send("Error: " + err));
+            })
+            .catch(err => res.send("Error: " + err));
     }
-    return;
 });
 
 //#endregion
 
-//#region "Put Request"
+//#region "Put Request" Update
+
+async function updateDBContact(id , newContact)
+{
+    const dbContact = await ContactDB
+        .find( {id: id} );
+    
+    dbContact[0].name = newContact.name;
+    dbContact[0].phone = newContact.phone;
+    dbContact[0].isFavourite = newContact.isFavourite;
+
+    await dbContact[0].save();
+
+    return;
+}
 
 router.put('/updateContact/:id', function(req,res)
 {
-    var contact = getContact(req.params.id);
+    var contact = getDBContact(req.params.id);
+
     if(!contact)
         res.status(404).send("Error 404 : The contact with given ID was not found !");
     else
@@ -80,9 +114,14 @@ router.put('/updateContact/:id', function(req,res)
             res.status(400).send(validation.error.details[0].message);
         else
         {
-            contact.name = req.body.name;
-            contact.phone = req.body.phone;
-            res.send(contacts);
+            updateDBContact(req.params.id , req.body)
+                .then(() =>
+                {
+                    getDBAllContacts()
+                        .then(contacts => res.send(contacts))
+                        .catch(err => res.send("Error: " + err));
+                })
+                .catch(err => res.send("Error: " + err));
         }
     }
     return;
@@ -91,15 +130,29 @@ router.put('/updateContact/:id', function(req,res)
 //#endregion
 
 //#region "Delete Request"
+
+async function deleteDBContact(id)
+{
+    await ContactDB.deleteOne( {id: id} );
+    return;
+}
+
 router.delete('/removeContact/:id', function(req,res)
 {		
-    var contact = getContact(req.params.id);
+    var contact = getDBContact(req.params.id);
+
     if(!contact)
         res.status(404).send("Error 404 : The contact with given ID was not found !");
     else
     {
-        contacts.splice(contacts.indexOf(contact) , 1);
-        res.send( contacts );
+        deleteDBContact(req.params.id)
+            .then(() =>
+            {
+                getDBAllContacts()
+                    .then(contacts => res.send(contacts))
+                    .catch(err => res.send("Error: " + err));
+            })
+            .catch(err => res.send("Error: " + err));
     }
     return;
 });

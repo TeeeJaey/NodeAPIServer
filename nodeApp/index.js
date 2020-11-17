@@ -1,15 +1,16 @@
 
 //#region "Imports"
 
-const express = require('express');     // Middleware to handle HTTP REST API   
+const express = require('express');     // Middleware to handle HTTP REST API  
 const contacts = require('./routes/contacts');     
-const home = require('./routes/home');     
+const home = require('./routes/home');         
 
 //#endregion
 
 var app = express();
 
 //#region "Routing"
+
 app.use(express.json());
 app.use(function(req, res, next) {
     res.header("Access-Control-Allow-Origin", "*");

@@ -17,15 +17,20 @@
     <style>
         body 
         {
-            margin:50px
+            margin:20px;
         }
         .phoneBook
         {
-            font-size:22px;
+            font-size:20px;
             background-color : #ff5e6c;
             color:white;
             text-align: center;
         } 
+        .fa-star, .fa-star-o
+        {
+            cursor: pointer;
+        }
+
     </style>
 
     <body>
@@ -54,10 +59,12 @@
                     <br><br>
                 </div>
                 <div class="row" v-if="serverOnline && !phoneBookEmpty"  v-for="x in phoneBook" v-bind:id=" x.id "  >
-                    <div class="col-xs-2 seq" > {{ x.seq }} </div>
-                    <div class="col-xs-3 name" > {{ x.name }} </div>
-                    <div class="col-xs-4 phone" > {{ x.phone }} </div>
-                    <div class="col-xs-3 delete">
+                    <div class="col-xs-1" > {{ x.seq }} </div>
+                    <div class="col-xs-3" > {{ x.name }} </div>
+                    <div class="col-xs-4" > {{ x.phone }} </div>
+                    <div v-if="x.isFavourite" class="col-xs-1" > <i class="fa fa-star" aria-hidden="true"></i> </div>
+                    <div v-if="!x.isFavourite" class="col-xs-1" > <i class="fa fa-star-o" aria-hidden="true"></i> </div>
+                    <div class="col-xs-3">
                         <button class="btn btn-primary btnUpdate" value="Update" >Update</button>
                         <button class="btn btn-danger btnDelete" value="Delete">Delete</button>
                     </div>
