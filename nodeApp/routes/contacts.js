@@ -1,24 +1,15 @@
 
 const express = require('express'); 
-const Joi = require('joi');             // Request validation
 const router = express.Router();
 const uuid = require('uuid');
 
-const ContactDB = require('../ContactDBCollection').ContactDB;
+const ContactDB = require('../dbModels/ContactModel').ContactDB;
+const validateContact = require('../dbModels/ContactModel').validateContact;
 
 router.use(express.json());
 
 
-function validateContact(contact) 
-{
-    const schema = Joi.object({
-        name : Joi.string().min(3).required(),
-        phone : Joi.number().min(6).required(),
-        isFavourite : Joi.boolean()
-    });
-    return schema.validate(contact);
-}
-
+//#region "Get Request" Read
 
 async function getDBContact(id)               // Mongo DB SELECT
 {
@@ -28,9 +19,6 @@ async function getDBContact(id)               // Mongo DB SELECT
     return(dbContacts[0]);
     //return contacts.find(x => x.id == id);
 }
-
-
-//#region "Get Request" Read
 
 async function getDBAllContacts(id)               // Mongo DB SELECT
 {
@@ -157,6 +145,5 @@ router.delete('/removeContact/:id', function(req,res)
     return;
 });
 //#endregion
-
 
 module.exports = router;

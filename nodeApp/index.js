@@ -1,11 +1,13 @@
 
-//#region "Imports"
-
 const express = require('express');     // Middleware to handle HTTP REST API  
+const mongoose = require('mongoose');   // Connect to Mongo Database
 const contacts = require('./routes/contacts');     
 const home = require('./routes/home');         
 
-//#endregion
+
+mongoose.connect('mongodb://localhost/nodeApp', { useNewUrlParser: true , useUnifiedTopology: true } )
+    .then(() => console.log("Connected to MongoDB..."))
+    .catch(err => console.log("Error Connecting to MongoDB :: " , err));
 
 var app = express();
 
@@ -24,9 +26,11 @@ app.use('/', home);                     //direct to a home router
 //#endregion
 
 //#region  "Open PORT : 3000"
+
 const port = process.env.PORT || 3000;  // Take port number from Environment variable
 app.listen(port, function()
 {
     console.log(`Listening to port ${port} ...`);
 });
+
 //#endregion
