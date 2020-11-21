@@ -1,0 +1,30 @@
+
+        body 
+        {
+            background-color : #ccc5ad;
+            color: #000;
+        }
+        .header
+        {
+            margin-top: 0px;
+            height:50px;
+            padding: 10px;
+            text-align:center;
+            background-color : #d47100;
+            color: #fff;
+        } 
+      
+        .phoneBook
+        {
+            font-size:20px;
+            color : #854802;
+            text-align: center;
+        } 
+        .fa-star, .fa-star-o
+        {
+            cursor: pointer;
+        }
+        .btnUpdate,.btnDelete
+        {
+            width: 100px;
+        }
