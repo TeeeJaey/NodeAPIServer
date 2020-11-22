@@ -16,7 +16,7 @@ const contactDBSchema = new mongoose.Schema({
         type: Boolean,
         default: false
     },
-    date: {
+    lastUpdateDate: {
         type: Date, 
         default: Date.now 
     }

@@ -1,11 +1,11 @@
 
-const contactApiUrl = "http://localhost:3000/api/contacts/";
+const contactApiUrl = "http://localhost:3000/api/contacts/"; 
 
 var phoneBook = [];
 var updateID = "";
 var currentOperation = "add";
 
-var contactContainer = new Vue();       // to put data in HTML
+var mainContentVue = new Vue();       // to put data in HTML 
 
 function refreshPhoneBook(contacts)
 {
@@ -16,16 +16,14 @@ function refreshPhoneBook(contacts)
         phoneBook.push(contacts[i]); 
     }
 
-    contactContainer.phoneBook = phoneBook;
-    if(phoneBook.length > 0)
-        contactContainer.phoneBookEmpty = false; 
-    else
-        contactContainer.phoneBookEmpty = true; 
+    mainContentVue.phoneBook = phoneBook;
+    mainContentVue.phoneBookEmpty = phoneBook.length==0,
     
     console.log(phoneBook);
 }
 
-function makeAPICall(method,URL,body)
+ 
+function makeContactsAPICall(method,URL,body)
 {
     var xmlhttp = new XMLHttpRequest();
     xmlhttp.open(method, URL,true);
@@ -34,12 +32,12 @@ function makeAPICall(method,URL,body)
     {
         if (this.readyState == 4 && this.status == 200) 
         {
-            contactContainer.serverOnline = true;
+            mainContentVue.serverOnline = true;
             refreshPhoneBook(JSON.parse(this.response));
         }
         else
         {
-            contactContainer.serverOnline = false;
+            mainContentVue.serverOnline = false;
             console.error(this.responseText);
         }
     };
@@ -49,21 +47,23 @@ function makeAPICall(method,URL,body)
 
 function validateForm()
 {
-    var formName = $(".formName").val();
-    var formPhone = $(".formPhone").val();
+    var formName = $("#contactCard_formName").val();
+    var formPhone = $("#contactCard_formPhone").val();
     
     const onlyNumbers = new RegExp("^[0-9]*$");
     const onlyAlphabets = new RegExp("^[A-Za-z]+$");
     
     if(onlyAlphabets.test(formName) && formPhone.length > 2 && onlyNumbers.test(formPhone) && formPhone.length > 8 )
     {
-        $(".formSubmit").prop('disabled', false); 
+        $("#contactCard_FormSubmit").prop('disabled', false); 
     }
     else
-        $(".formSubmit").prop('disabled', true);
+        $("#contactCard_FormSubmit").prop('disabled', true);
         
     return;
 }
+
+
 
 function toggleFavourite(isFavourite)
 {
@@ -78,52 +78,63 @@ function toggleFavourite(isFavourite)
         isFavourite : updContact.isFavourite
     };
 
-    makeAPICall("PUT", contactApiUrl + "updateContact/" + updateID , JSON.stringify(contact)); 
+    makeContactsAPICall("PUT", contactApiUrl + "updateContact/" + updateID , JSON.stringify(contact)); 
     return;
 }
 
 $(document).ready(function()
 {
 
-    contactContainer = new Vue({
-        el: '#contactContainer',
+    mainContentVue = new Vue({
+        el: '#mainContent',
         data: {
+            logedIn : false,
+            registered : true,
             serverOnline : false,
-            phoneBookEmpty : true,
-            phoneBook : []
+            phoneBook : [],
+            phoneBookEmpty : phoneBook.length==0,
+            loginUser : null,
+            formError : null
         }
-    });
-    makeAPICall("GET", contactApiUrl + "getAllContacts");
+    }); 
 
-    $(document.body).on('click',"#submit", function()
+    var loggedInUser = sessionStorage.getItem("NodeApiApp_LogedIn");
+    if( loggedInUser != null && loggedInUser != "")
+    {
+        mainContentVue.logedIn = true;
+        mainContentVue.loginUser = loggedInUser.split('@')[0] ;
+        makeContactsAPICall("GET", contactApiUrl + "getAllContacts");
+    }
+
+    $(document.body).on('click',"#contactCard_FormSubmit", function()
     {
         const contact = {
-            name : $(".formName").val(),
-            phone : $(".formPhone").val()
+            name : $("#contactCard_formName").val(),
+            phone : $("#contactCard_formPhone").val()
         } 
     
         if(currentOperation == "upd")
         {
-            makeAPICall("PUT", contactApiUrl + "updateContact/" + updateID , JSON.stringify(contact)); 
+            makeContactsAPICall("PUT", contactApiUrl + "updateContact/" + updateID , JSON.stringify(contact)); 
         }
         else
         {
-            makeAPICall("POST", contactApiUrl + "newContact"  , JSON.stringify(contact)); 
+            makeContactsAPICall("POST", contactApiUrl + "newContact"  , JSON.stringify(contact)); 
         } 
         $('#contactCardModal').modal('hide');
     });
 
     $(document.body).on('click',"#btnNewContact", function()
     {
-        $(".formName").val("");
-        $(".formPhone").val("");
+        $("#contactCard_formName").val("");
+        $("#contactCard_formPhone").val("");
         currentOperation = "add";
 
         validateForm();
         $('#contactCardModal').modal();
     });
 
-    $("input").keyup( function()
+    $("#contactCardModal").keyup(function()
     {
         validateForm();
     });
@@ -134,8 +145,8 @@ $(document).ready(function()
         currentOperation = "upd";
 
         var updContact = phoneBook.find(x => x.id == updateID);
-        $(".formName").val(updContact.name);
-        $(".formPhone").val(updContact.phone);
+        $("#contactCard_formName").val(updContact.name);
+        $("#contactCard_formPhone").val(updContact.phone);
         
         validateForm();
         $('#contactCardModal').modal();
@@ -144,7 +155,7 @@ $(document).ready(function()
     $(document.body).on('click','.btnDelete', function()
     {
         const id = this.parentElement.parentElement.id;
-        makeAPICall("DELETE", contactApiUrl + "removeContact/" + id); 
+        makeContactsAPICall("DELETE", contactApiUrl + "removeContact/" + id); 
     });
 
     $(document.body).on('click','.fa-star', function()
@@ -158,6 +169,5 @@ $(document).ready(function()
         updateID = this.parentElement.parentElement.id;
         toggleFavourite(true);
     });
-
     
 });

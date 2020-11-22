@@ -1,6 +1,7 @@
 
         body 
         {
+            font-size:18px;
             background-color : #ccc5ad;
             color: #000;
         }
@@ -16,7 +17,6 @@
       
         .phoneBook
         {
-            font-size:20px;
             color : #854802;
             text-align: center;
         } 

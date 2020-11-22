@@ -11,33 +11,47 @@
 
         <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/vue@2/dist/vue.js"></script>
         <script type="text/javascript" src="client.js"></script>
+        <script type="text/javascript" src="logIn.js"></script>
 
 		<link type="text/css" rel="stylesheet" href="client.css">
     </head>
 
     <body>
-        <h3 class="header" >HTML-VueJS Client <===> NodeJS Server</h3>
+        <div id="mainContent">
+        <div class="header" v-if="logedIn">
+            <div class="col-xs-10"  > HTML-VueJS Client <===> NodeJS Server </div>  
+            <button class="col-xs-2 btn btn-primary" id="btnLogOut"  style="max-width: 150px;" >Log Out</button> 
+        </div>
+        <div class="header" v-if="!logedIn">
+           HTML-VueJS Client <===> NodeJS Server  
+        </div>
+
         <br>
-        <ul class="container phoneBook list-group">
-            <div class="row list-group-item">
-                <div class="col-md-9 col-xs-8" style="padding-top: 10px;"> <b> My Phone Book </b> </div>
-                <div class="col-md-3 col-xs-4" style="padding-top: 10px;">
-                    <button class="btn btn-success" value="Add New Contact" id="btnNewContact">Add New Contact</button>
+
+
+        <ul class="container phoneBook list-group" v-if="logedIn">
+            <div class="row list-group-item" style="background-color: #ffc368;">
+                <div class="col-md-2 col-xs-2" style="padding-top: 5px;">   {{loginUser}}</div>
+                <div class="col-md-7 col-xs-6" style="padding-top: 5px;"> <b>  Phone Book </b> </div>
+                <div class="col-md-3 col-xs-4">
+                    <button class="btn btn-success" value="Add New Contact" id="btnNewContact" v-if="serverOnline">
+                        Add New Contact
+                    </button>
                 </div>
             </div>
-            <div id="contactContainer"> 
-                <li class="row list-group-item"  v-if="!serverOnline">
-                    Error in server :( 
-                    <br>
-                    Check the console for details.
-                </li>
+            <li class="row list-group-item"  v-if="!serverOnline">
+                Error in server :( 
+                <br>
+                Check the console for details.
+            </li>
+            <div id="contactContainer" v-if="serverOnline" > 
                 
-                <li class="row list-group-item" v-if="serverOnline && phoneBookEmpty">
+                <li class="row list-group-item" v-if="phoneBookEmpty">
                     You have no contacts.. 
                     <br>
                     Try adding one :)
                 </li>
-                <li class="row list-group-item" v-if="serverOnline && !phoneBookEmpty"  v-for="x in phoneBook" v-bind:id=" x.id "  >
+                <li class="row list-group-item" v-if="!phoneBookEmpty"  v-for="x in phoneBook" v-bind:id=" x.id "  >
                     <div class="col-xs-1" > {{ x.seq }} </div>
                     <div class="col-xs-3" > {{ x.name }} </div>
                     <div class="col-xs-4" > {{ x.phone }} </div>
@@ -62,24 +76,94 @@
 				<div class="modal-body">
                     <form>
                         <div class="form-group">
-                            <label for="formname" class="control-label">Name: </label> (HINT : atleast 3 alphabets)
-                            <input type="text" name="formname" class="form-control formName" required  />
+                            <label for="contactCard_formName" class="control-label">Name: </label> (HINT : atleast 3 alphabets)
+                            <input type="text" name="contactCard_formName" class="form-control formName" id="contactCard_formName" />
                         </div>
                         <div class="form-group">
-                            <label for="formPhone" class="control-label">Phone: </label> (HINT : atleast 8 numbers)
-                            <input class="form-control formPhone" name="formPhone" id="message-text" />
+                            <label for="contactCard_formPhone" class="control-label">Phone: </label> (HINT : atleast 8 numbers)
+                            <input type="text" name="contactCard_formPhone" class="form-control formPhone"  id="contactCard_formPhone" />
                         </div>
                     </form>
 				</div>
 
 				<div class="modal-footer">
-					<button type="button" class="btn btn-success formSubmit" id="submit"> Submit </button>
+					<button type="button" class="btn btn-success formSubmit" id="contactCard_FormSubmit"> Submit </button>
 					<button type="button" class="btn btn-danger" data-dismiss="modal" > Cancel </button>
 				</div>
 			</div>
 			</div>
         </div>
+
         
+        <!-- Log in modal -->
+		<div style="margin-top: 50px" id="logIn_Modal" tabindex="-1" role="dialog"  v-if="!logedIn && registered">
+			<div class="modal-dialog " role="document">
+			<div class="modal-content">
+				<div class="modal-header">
+					<h3 class="modal-title">Log In</h3>
+				</div>
+
+				<div class="modal-body">
+                    <form>
+                        <div class="form-group">
+                            <label for="logIn_FormEmail" class="control-label">Email: </label>  
+                            <input type="text" name="logIn_FormEmail" class="form-control" id="logIn_FormEmail"  />
+                        </div>
+                        <div class="form-group">
+                            <label for="logIn_FormPassword" class="control-label">Password: </label>
+                            <input type="password" name="logIn_FormPassword" class="form-control"  id="logIn_FormPassword" />
+                        </div>
+                    </form>
+				</div>
+
+				<div class="modal-footer">
+					<button type="button" class="btn btn-success " id="logIn_FormSubmit" style="width: 49%;"> Log In </button>
+					<button type="button" class="btn btn-info" id="register_Switch" style="width: 49%;">  Register </button>
+                </div>
+                <li class="list-group-item list-group-item-danger" v-if="formError"> {{ formError }} </li>
+			</div>
+			</div>
+        </div>
+        
+        <!-- Register modal -->
+		<div style="margin-top: 30px" id="register_Modal" tabindex="-1" role="dialog"  v-if="!logedIn && !registered">
+			<div class="modal-dialog " role="document">
+			<div class="modal-content">
+				<div class="modal-header">
+					<h3 class="modal-title">Register</h3>
+				</div>
+
+				<div class="modal-body">
+                    <form>
+                        <div class="form-group">
+                            <label for="register_formEmail" class="control-label">Email: </label>  
+                            <input type="text" name="register_formEmail" class="form-control" id="register_formEmail" />
+                        </div>
+                        <div class="form-group">
+                            <label for="register_formName" class="control-label">Name: </label>  
+                            <input type="text" name="register_formName" class="form-control" id="register_formName" />
+                        </div>
+                        <div class="form-group">
+                            <label for="register_formPassword" class="control-label">Password: </label>
+                            <input type="password" name="register_formPassword" class="form-control"  id="register_formPassword" />
+                        </div>
+                        <div class="form-group">
+                            <label for="register_formConfPassword" class="control-label">Confirm Password: </label>
+                            <input type="password" name="register_formConfPassword" class="form-control"  id="register_formConfPassword" />
+                        </div>
+                    </form>
+				</div>
+
+				<div class="modal-footer">
+					<button type="button" class="btn btn-success" id="register_FormSubmit" style="width: 49%;"> Register </button>
+					<button type="button" class="btn btn-info" id="logIn_Switch" style="width: 49%;" > Log In</button>
+				</div>
+                <li class="list-group-item list-group-item-danger" v-if="formError"> {{ formError }} </li>
+			</div>
+			</div>
+        </div>
+
+        </div>
     </body>
 
 

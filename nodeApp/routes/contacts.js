@@ -43,11 +43,11 @@ router.get('/getAllContacts', function(req,res)
 async function insertDBContact(contact)
 {
     const contactDBObj = new ContactDB(contact);
-    const mongoResult = await contactDBObj.save();
+    await contactDBObj.save();
     return;
 }
 
-router.post('/newContact', function(req,res)
+router.post('/newContact', async function(req,res)
 { 
     var validation = validateContact(req.body);
     if(validation.error)
@@ -64,8 +64,8 @@ router.post('/newContact', function(req,res)
             .then(() =>
             {
                 getDBAllContacts()
-                .then(contacts => res.send(contacts))
-                .catch(err => res.send("Error: " + err));
+                    .then(contacts => res.send(contacts))
+                    .catch(err => res.send("Error: " + err));            
             })
             .catch(err => res.send("Error: " + err));
     }
@@ -89,10 +89,9 @@ async function updateDBContact(id , newContact)
     return;
 }
 
-router.put('/updateContact/:id', function(req,res)
+router.put('/updateContact/:id', async function(req,res)
 {
-    var contact = getDBContact(req.params.id);
-
+    var contact = await getDBContact(req.params.id)
     if(!contact)
         res.status(404).send("Error 404 : The contact with given ID was not found !");
     else
@@ -112,7 +111,6 @@ router.put('/updateContact/:id', function(req,res)
                 .catch(err => res.send("Error: " + err));
         }
     }
-    return;
 });
 
 //#endregion
@@ -125,10 +123,9 @@ async function deleteDBContact(id)
     return;
 }
 
-router.delete('/removeContact/:id', function(req,res)
+router.delete('/removeContact/:id', async function(req,res)
 {		
-    var contact = getDBContact(req.params.id);
-
+    var contact = await getDBContact(req.params.id)
     if(!contact)
         res.status(404).send("Error 404 : The contact with given ID was not found !");
     else
@@ -142,7 +139,6 @@ router.delete('/removeContact/:id', function(req,res)
             })
             .catch(err => res.send("Error: " + err));
     }
-    return;
 });
 //#endregion
 
