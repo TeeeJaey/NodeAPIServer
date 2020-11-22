@@ -7,7 +7,6 @@
 		<script src="http://code.jquery.com/jquery-2.1.4.min.js"></script>
 		<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
 		<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
-		<script src="https://cdn.jsdelivr.net/npm/sweetalert2@10"></script>
 
         <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/vue@2/dist/vue.js"></script>
         <script type="text/javascript" src="client.js"></script>
@@ -32,7 +31,7 @@
         <li class="row list-group-item" v-if="loading" >
             <div class="loader" > </div>
         </li>
-        
+
         <ul class="container phoneBook list-group" v-if="!loading && logedIn">
             
             <div class="row list-group-item" style="background-color: #ffc368;" v-if="serverOnline">
