@@ -27,10 +27,15 @@
         </div>
 
         <br>
+        
 
-
-        <ul class="container phoneBook list-group" v-if="logedIn">
-            <div class="row list-group-item" style="background-color: #ffc368;">
+        <li class="row list-group-item" v-if="loading" >
+            <div class="loader" > </div>
+        </li>
+        
+        <ul class="container phoneBook list-group" v-if="!loading && logedIn">
+            
+            <div class="row list-group-item" style="background-color: #ffc368;" v-if="serverOnline">
                 <div class="col-md-2 col-xs-2" style="padding-top: 5px;">   {{loginUser}}</div>
                 <div class="col-md-7 col-xs-6" style="padding-top: 5px;"> <b>  Phone Book </b> </div>
                 <div class="col-md-3 col-xs-4">
@@ -39,11 +44,13 @@
                     </button>
                 </div>
             </div>
+
             <li class="row list-group-item"  v-if="!serverOnline">
                 Error in server :( 
                 <br>
                 Check the console for details.
             </li>
+            
             <div id="contactContainer" v-if="serverOnline" > 
                 
                 <li class="row list-group-item" v-if="phoneBookEmpty">

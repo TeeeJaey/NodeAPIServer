@@ -25,20 +25,35 @@ function refreshPhoneBook(contacts)
  
 function makeContactsAPICall(method,URL,body)
 {
+    mainContentVue.loading = true;
     var xmlhttp = new XMLHttpRequest();
     xmlhttp.open(method, URL,true);
     xmlhttp.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
-    xmlhttp.onload = function() 
-    {
-        if (this.readyState == 4 && this.status == 200) 
+    xmlhttp.onreadystatechange = function () 
+    { 
+        if(xmlhttp.readyState === XMLHttpRequest.DONE) 
         {
-            mainContentVue.serverOnline = true;
-            refreshPhoneBook(JSON.parse(this.response));
-        }
-        else
-        {
-            mainContentVue.serverOnline = false;
-            console.error(this.responseText);
+            switch (xmlhttp.status)
+            {
+                case 0 :
+                {
+                    mainContentVue.serverOnline = false;
+                    console.error(this.responseText);
+                    break;
+                }
+                case 200 :
+                {
+                    mainContentVue.serverOnline = true;
+                    refreshPhoneBook(JSON.parse(this.response));
+                    break;
+                }
+                default:
+                {
+                    console.error(this.responseText);
+                    break;
+                }
+            }
+            mainContentVue.loading = false;
         }
     };
     xmlhttp.send(body);
@@ -94,7 +109,8 @@ $(document).ready(function()
             phoneBook : [],
             phoneBookEmpty : phoneBook.length==0,
             loginUser : null,
-            formError : null
+            formError : null,
+            loading : true
         }
     }); 
 
@@ -105,6 +121,8 @@ $(document).ready(function()
         mainContentVue.loginUser = loggedInUser.split('@')[0] ;
         makeContactsAPICall("GET", contactApiUrl + "getAllContacts");
     }
+    else
+        mainContentVue.loading = false;
 
     $(document.body).on('click',"#contactCard_FormSubmit", function()
     {

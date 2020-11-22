@@ -1,30 +1,46 @@
 
-        body 
-        {
-            font-size:18px;
-            background-color : #ccc5ad;
-            color: #000;
-        }
-        .header
-        {
-            margin-top: 0px;
-            height:50px;
-            padding: 10px;
-            text-align:center;
-            background-color : #d47100;
-            color: #fff;
-        } 
-      
-        .phoneBook
-        {
-            color : #854802;
-            text-align: center;
-        } 
-        .fa-star, .fa-star-o
-        {
-            cursor: pointer;
-        }
-        .btnUpdate,.btnDelete
-        {
-            width: 100px;
-        }
+body 
+{
+    font-size:18px;
+    background-color : #ccc5ad;
+    color: #000;
+}
+.header
+{
+    margin-top: 0px;
+    height:50px;
+    padding: 10px;
+    text-align:center;
+    background-color : #d47100;
+    color: #fff;
+} 
+
+.phoneBook
+{
+    color : #854802;
+    text-align: center;
+} 
+.fa-star, .fa-star-o
+{
+    cursor: pointer;
+}
+.btnUpdate,.btnDelete
+{
+    width: 100px;
+}
+
+        
+.loader {
+    border: 10px solid #f3f3f3;
+    border-radius: 100%;
+    border-top: 10px solid #000;
+    width: 60px;
+    height: 60px;
+    -webkit-animation: spin 1s linear infinite;  
+    animation: spin 1s linear infinite;
+    margin: auto;
+  }
+  @keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+  }

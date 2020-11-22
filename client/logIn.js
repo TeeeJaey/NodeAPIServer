@@ -5,30 +5,46 @@ function logIn(userEmail)
 {
     sessionStorage.setItem("NodeApiApp_LogedIn",userEmail);
     mainContentVue.logedIn = true;
-    mainContentVue.loginUser = userEmail.split('@')[0] ;
+    mainContentVue.loginUser = userEmail.split('@')[0];
     makeContactsAPICall("GET", contactApiUrl + "getAllContacts");
     return;
 }
 
 function makeUsersAPICall(method,URL,body)
 {
+    mainContentVue.formError = "";
     var xmlhttp = new XMLHttpRequest();
     xmlhttp.open(method, URL,true);
     xmlhttp.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
-    xmlhttp.onload = function() 
-    {
-        if (this.readyState == 4 && this.status == 200) 
+    xmlhttp.onreadystatechange = function () 
+    { 
+        if(xmlhttp.readyState === XMLHttpRequest.DONE) 
         {
-            mainContentVue.serverOnline = true;
-            const res = JSON.parse(this.response);
-            if(res.logIn)
-                logIn(res.user);
-        }
-        else
-        {
-            mainContentVue.serverOnline = false;
-            console.error(this.responseText);
-            mainContentVue.formError = this.responseText;
+            switch (xmlhttp.status)
+            {
+                case 0 :
+                {
+                    mainContentVue.serverOnline = false;
+                    console.error(this.responseText);
+                    mainContentVue.formError = "Server unreachable!";
+                    break;
+                }
+                case 200 :
+                {
+                    mainContentVue.serverOnline = true;
+                    const res = JSON.parse(this.response);
+                    if(res.logIn)
+                        logIn(res.user);
+                    break;
+                }
+                default:
+                {
+                    mainContentVue.serverOnline = true;
+                    console.error(this.responseText);
+                    mainContentVue.formError = this.responseText;
+                    break;
+                }
+            } 
         }
     };
     xmlhttp.send(body);
